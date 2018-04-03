@@ -8,6 +8,7 @@ https://www.github.com/kyubyong/transformer
 
 from __future__ import print_function
 import tensorflow as tf
+import numpy as np
 
 def normalize(inputs, 
               epsilon = 1e-8,

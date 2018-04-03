@@ -8,9 +8,9 @@ https://www.github.com/kyubyong/transformer
 from __future__ import print_function
 import tensorflow as tf
 
-from hyperparams import Hyperparams as hp
-from data_load import get_batch_data, load_de_vocab, load_en_vocab
-from modules import *
+from transformer.hyperparams import Hyperparams as hp
+from transformer.data_load import get_batch_data, load_de_vocab, load_en_vocab
+from transformer.modules import *
 import os, codecs
 from tqdm import tqdm
 

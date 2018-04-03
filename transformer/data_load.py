@@ -6,7 +6,7 @@ kbpark.linguist@gmail.com.
 https://www.github.com/kyubyong/transformer
 '''
 from __future__ import print_function
-from hyperparams import Hyperparams as hp
+from transformer.hyperparams import Hyperparams as hp
 import tensorflow as tf
 import numpy as np
 import codecs
@@ -49,21 +49,24 @@ def create_data(source_sents, target_sents):
     return X, Y, Sources, Targets
 
 def load_train_data():
-    de_sents = [regex.sub("[^\s\p{Latin}']", "", line) for line in codecs.open(hp.source_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
+    de_sents = [regex.sub("[^\s\p{HAN}']", "", line) for line in codecs.open(hp.source_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
     en_sents = [regex.sub("[^\s\p{Latin}']", "", line) for line in codecs.open(hp.target_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
     
     X, Y, Sources, Targets = create_data(de_sents, en_sents)
     return X, Y
     
 def load_test_data():
-    def _refine(line):
-        line = regex.sub("<[^>]+>", "", line)
-        line = regex.sub("[^\s\p{Latin}']", "", line) 
+    def _refine(line, language):
+    #     line = regex.sub("<[^>]+>", "", line)
+        line = regex.sub("[^\s\p{" + language + "}']", "", line)
         return line.strip()
     
-    de_sents = [_refine(line) for line in codecs.open(hp.source_test, 'r', 'utf-8').read().split("\n") if line and line[:4] == "<seg"]
-    en_sents = [_refine(line) for line in codecs.open(hp.target_test, 'r', 'utf-8').read().split("\n") if line and line[:4] == "<seg"]
-        
+    # de_sents = [_refine(line) for line in codecs.open(hp.source_test, 'r', 'utf-8').read().split("\n") if line and line[:4] == "<seg"]
+    # en_sents = [_refine(line) for line in codecs.open(hp.target_test, 'r', 'utf-8').read().split("\n") if line and line[:4] == "<seg"]
+
+    de_sents = [_refine(line, "HAN") for line in codecs.open(hp.source_test, 'r', 'utf-8').read().split("\n")]
+    en_sents = [_refine(line, "Latin") for line in codecs.open(hp.target_test, 'r', 'utf-8').read().split("\n")]
+
     X, Y, Sources, Targets = create_data(de_sents, en_sents)
     return X, Sources, Targets # (1064, 150)
 
