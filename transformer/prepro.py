@@ -6,7 +6,7 @@ kbpark.linguist@gmail.com.
 https://www.github.com/kyubyong/transformer
 '''
 from __future__ import print_function
-from .hyperparams import Hyperparams as hp
+from transformer.hyperparams import Hyperparams as hp
 import tensorflow as tf
 import numpy as np
 import codecs
@@ -14,7 +14,7 @@ import os
 import regex
 from collections import Counter
 
-def make_vocab(fpath, fname):
+def make_vocab(fpath, fname, language):
     '''Constructs vocabulary.
     
     Args:
@@ -24,7 +24,7 @@ def make_vocab(fpath, fname):
     Writes vocabulary line by line to `preprocessed/fname`
     '''  
     text = codecs.open(fpath, 'r', 'utf-8').read()
-    text = regex.sub("[^\s\p{Latin}']", "", text)
+    text = regex.sub("[^\s\p{" + language+ "}']", "", text)
     words = text.split()
     word2cnt = Counter(words)
     if not os.path.exists('preprocessed'): os.mkdir('preprocessed')
@@ -34,6 +34,6 @@ def make_vocab(fpath, fname):
             fout.write(u"{}\t{}\n".format(word, cnt))
 
 if __name__ == '__main__':
-    make_vocab(hp.source_train, "de.vocab.tsv")
-    make_vocab(hp.target_train, "en.vocab.tsv")
+    make_vocab(hp.source_train, "de.vocab.tsv", "HAN")
+    make_vocab(hp.target_train, "en.vocab.tsv", "Latin")
     print("Done")
