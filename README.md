@@ -3,7 +3,7 @@ Apply state of art machine translation techniques to Chinese and English transla
 
 ### Dataset
 
-1. Download [MultiUN dataset] (http://opus.nlpl.eu/download.php?f=MultiUN/en-zh.xml.gz)
+1. Download [MultiUN dataset](http://opus.nlpl.eu/download.php?f=MultiUN/en-zh.xml.gz)
 
 ### Pre-Processing
 
