@@ -8,8 +8,8 @@ https://www.github.com/kyubyong/transformer
 class Hyperparams:
     '''Hyperparameters'''
     # data
-    source = 'corpora/MultiUN.en-zh.zh'
-    target = 'corpora/MultiUN.en-zh.en'
+    source = 'transformer/corpora/MultiUN.en-zh.zh'
+    target = 'transformer/corpora/MultiUN.en-zh.en'
     source_train = source + "_train"
     target_train = target + "_train"
     source_test = source + "_test"
