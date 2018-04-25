@@ -134,13 +134,38 @@ class Graph():
             # Decoder
             with tf.variable_scope("decoder2"):
                 ## Embedding
-                self.dec2 = self.dec1
+                self.dec2 = embedding(self.decoder_inputs,
+                                      vocab_size=len(en2idx),
+                                      num_units=hp.hidden_units,
+                                      scale=True,
+                                      scope="dec_embed")
+
+                ## Positional Encoding
+                if hp.sinusoid:
+                    self.dec2 += positional_encoding(self.decoder_inputs,
+                                      vocab_size=hp.maxlen,
+                                      num_units=hp.hidden_units,
+                                      zero_pad=False,
+                                      scale=False,
+                                      scope="dec_pe")
+                else:
+                    self.dec2 += embedding(tf.tile(tf.expand_dims(tf.range(tf.shape(self.decoder_inputs)[1]), 0), [tf.shape(self.decoder_inputs)[0], 1]),
+                                      vocab_size=hp.maxlen,
+                                      num_units=hp.hidden_units,
+                                      zero_pad=False,
+                                      scale=False,
+                                      scope="dec_pe")
+
+                ## Dropout
+                self.dec2 = tf.layers.dropout(self.dec2,
+                                            rate=hp.dropout_rate,
+                                            training=tf.convert_to_tensor(is_training))
 
                 ## Blocks
                 for i in range(hp.num_blocks):
                     with tf.variable_scope("num_blocks_{}".format(i)):
                         ## Multihead Attention ( self-attention)
-                        self.dec2_1 = multihead_attention(queries=self.dec2,
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec2,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -150,7 +175,7 @@ class Graph():
                                                         scope="self_attention")
 
                         ## Multihead Attention ( encoder attention)
-                        self.dec2_2 = multihead_attention(queries=self.dec2,
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.enc,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -159,7 +184,7 @@ class Graph():
                                                         causality=False,
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
-                        self.dec2_3 = multihead_attention(queries=self.dec2,
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec1,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -167,13 +192,12 @@ class Graph():
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2_out = (self.dec2_1 + self.dec2_2 + self.dec2_3) 
 
                         ## Feed Forward
-                        self.dec2_out = feedforward(self.dec2_out, num_units=[4*hp.hidden_units, hp.hidden_units])
+                        self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
             # Final linear projection
-            self.logits = tf.layers.dense(self.dec2_out, len(en2idx))
+            self.logits = tf.layers.dense(self.dec2, len(en2idx))
             self.preds = tf.to_int32(tf.arg_max(self.logits, dimension=-1))
             self.istarget = tf.to_float(tf.not_equal(self.y, 0))
             self.acc = tf.reduce_sum(tf.to_float(tf.equal(self.preds, self.y))*self.istarget)/ (tf.reduce_sum(self.istarget))
