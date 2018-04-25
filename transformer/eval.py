@@ -13,9 +13,9 @@ import os
 import tensorflow as tf
 import numpy as np
 
-from .hyperparams import Hyperparams as hp
-from .data_load import load_test_data, load_de_vocab, load_en_vocab
-from .train import Graph
+from hyperparams import Hyperparams as hp
+from data_load import load_test_data, load_de_vocab, load_en_vocab
+from train import Graph
 from nltk.translate.bleu_score import corpus_bleu
 
 def eval(): 

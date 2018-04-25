@@ -1,4 +1,4 @@
-from transformer.hyperparams import Hyperparams as hp
+from hyperparams import Hyperparams as hp
 
 TRAIN_SET_SIZE = 200000
 TEST_SET_SIZE = 1000
