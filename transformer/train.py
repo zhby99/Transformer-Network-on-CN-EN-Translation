@@ -134,32 +134,7 @@ class Graph():
             # Decoder
             with tf.variable_scope("decoder2"):
                 ## Embedding
-                self.dec2 = embedding(self.decoder_inputs,
-                                      vocab_size=len(en2idx),
-                                      num_units=hp.hidden_units,
-                                      scale=True,
-                                      scope="dec_embed")
-
-                ## Positional Encoding
-                if hp.sinusoid:
-                    self.dec2 += positional_encoding(self.decoder_inputs,
-                                      vocab_size=hp.maxlen,
-                                      num_units=hp.hidden_units,
-                                      zero_pad=False,
-                                      scale=False,
-                                      scope="dec_pe")
-                else:
-                    self.dec2 += embedding(tf.tile(tf.expand_dims(tf.range(tf.shape(self.decoder_inputs)[1]), 0), [tf.shape(self.decoder_inputs)[0], 1]),
-                                      vocab_size=hp.maxlen,
-                                      num_units=hp.hidden_units,
-                                      zero_pad=False,
-                                      scale=False,
-                                      scope="dec_pe")
-
-                ## Dropout
-                self.dec2 = tf.layers.dropout(self.dec2,
-                                            rate=hp.dropout_rate,
-                                            training=tf.convert_to_tensor(is_training))
+                self.dec2 = self.dec1
 
                 ## Blocks
                 for i in range(hp.num_blocks):
@@ -192,7 +167,7 @@ class Graph():
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2_out = (self.dec2_1 + self.dec2_2 + self.dec2_3) / 3
+                        self.dec2_out = (self.dec2_1 + self.dec2_2 + self.dec2_3) 
 
                         ## Feed Forward
                         self.dec2_out = feedforward(self.dec2_out, num_units=[4*hp.hidden_units, hp.hidden_units])
