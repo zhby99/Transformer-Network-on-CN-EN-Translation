@@ -49,8 +49,8 @@ def create_data(source_sents, target_sents):
     return X, Y, Sources, Targets
 
 def load_train_data():
-    de_sents = [regex.sub("[^\s\d\p{HAN}']", "", line) for line in codecs.open(hp.source_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
-    en_sents = [regex.sub("[^\s\d\p{Latin}']", "", line) for line in codecs.open(hp.target_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
+    de_sents = [regex.sub("[^\s\p{HAN}']", "", line) for line in codecs.open(hp.source_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
+    en_sents = [regex.sub("[^\s\p{Latin}']", "", line) for line in codecs.open(hp.target_train, 'r', 'utf-8').read().split("\n") if line and line[0] != "<"]
     
     X, Y, Sources, Targets = create_data(de_sents, en_sents)
     return X, Y
