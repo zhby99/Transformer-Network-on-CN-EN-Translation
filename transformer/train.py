@@ -31,6 +31,10 @@ class Graph():
             de2idx, idx2de = load_de_vocab()
             en2idx, idx2en = load_en_vocab()
 
+            #
+            enc_list = []
+            dec_list = []
+
             # Encoder
             with tf.variable_scope("encoder"):
                 ## Embedding
@@ -75,6 +79,7 @@ class Graph():
 
                         ### Feed Forward
                         self.enc = feedforward(self.enc, num_units=[4*hp.hidden_units, hp.hidden_units])
+                        enc_list.append(tf.identity(self.enc))
 
             # Decoder
             with tf.variable_scope("decoder1"):
@@ -131,6 +136,7 @@ class Graph():
 
                         ## Feed Forward
                         self.dec1 = feedforward(self.dec1, num_units=[4*hp.hidden_units, hp.hidden_units])
+                        dec_list.append(tf.identity(self.dec1))
             # Decoder
             with tf.variable_scope("decoder2"):
                 ## Embedding
@@ -176,7 +182,7 @@ class Graph():
 
                         ## Multihead Attention ( encoder attention)
                         self.dec2_2 = multihead_attention(queries=self.dec2,
-                                                        keys=self.enc,
+                                                        keys=enc_list[i],
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,
@@ -185,14 +191,14 @@ class Graph():
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
                         self.dec2_3 = multihead_attention(queries=self.dec2,
-                                                        keys=self.dec1,
+                                                        keys=dec_list[i],
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2 = (self.dec2_1 + self.dec2_2 + self.dec2_3) / 3.0
+                        self.dec2 = tf.divide(tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3]), 3.0)
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
