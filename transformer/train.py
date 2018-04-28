@@ -197,7 +197,7 @@ class Graph():
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
             # Final linear projection
-            self.logits = tf.layers.dense(self.dec2, len(en2idx))
+            self.logits = tf.layers.dense(self.dec1, len(en2idx))
             self.preds = tf.to_int32(tf.arg_max(self.logits, dimension=-1))
             self.istarget = tf.to_float(tf.not_equal(self.y, 0))
             self.acc = tf.reduce_sum(tf.to_float(tf.equal(self.preds, self.y))*self.istarget)/ (tf.reduce_sum(self.istarget))
