@@ -198,7 +198,7 @@ class Graph():
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2 = tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3])
+                        self.dec2 = tf.divide(tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3]), 3.0)
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
@@ -214,6 +214,7 @@ class Graph():
                 self.y_smoothed = label_smoothing(tf.one_hot(self.y, depth=len(en2idx)))
                 self.loss = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y_smoothed)
                 self.mean_loss = tf.reduce_sum(self.loss*self.istarget) / (tf.reduce_sum(self.istarget))
+                print("Mean loss is {}".format(self.mean_loss))
 
                 # Training Scheme
                 self.global_step = tf.Variable(0, name='global_step', trainable=False)
