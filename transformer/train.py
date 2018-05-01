@@ -191,7 +191,7 @@ class Graph():
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
                         self.dec2_2 = multihead_attention(queries=self.dec2,
-                                                        keys=self.dec_list[i],
+                                                        keys=self.dec1,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,

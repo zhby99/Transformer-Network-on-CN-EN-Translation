@@ -26,7 +26,7 @@ class Hyperparams:
     min_cnt = 20 # words whose occurred less than min_cnt are encoded as <UNK>.
     hidden_units = 512 # alias = C
     num_blocks = 6 # number of encoder/decoder blocks
-    num_epochs = 3
+    num_epochs = 20
     num_heads = 8
     dropout_rate = 0.1
     sinusoid = False # If True, use sinusoid. If false, positional embedding.
