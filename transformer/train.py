@@ -190,14 +190,14 @@ class Graph():
                                                         causality=False,
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
-                        # self.dec2 = multihead_attention(queries=self.dec2,
-                        #                                 keys=self.dec1,
-                        #                                 num_units=hp.hidden_units,
-                        #                                 num_heads=hp.num_heads,
-                        #                                 dropout_rate=hp.dropout_rate,
-                        #                                 is_training=is_training,
-                        #                                 causality=False,
-                        #                                 scope="decoder_attention")
+                        self.dec2 = multihead_attention(queries=self.dec2,
+                                                        keys=self.dec1,
+                                                        num_units=hp.hidden_units,
+                                                        num_heads=hp.num_heads,
+                                                        dropout_rate=hp.dropout_rate,
+                                                        is_training=is_training,
+                                                        causality=False,
+                                                        scope="decoder_attention")
                         # self.dec2 = tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3])
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
