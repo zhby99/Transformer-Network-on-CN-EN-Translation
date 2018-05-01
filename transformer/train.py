@@ -32,8 +32,8 @@ class Graph():
             en2idx, idx2en = load_en_vocab()
 
             #
-            enc_list = []
-            dec_list = []
+            self.enc_list = []
+            self.dec_list = []
 
             # Encoder
             with tf.variable_scope("encoder"):
@@ -79,7 +79,7 @@ class Graph():
 
                         ### Feed Forward
                         self.enc = feedforward(self.enc, num_units=[4*hp.hidden_units, hp.hidden_units])
-                        enc_list.append(tf.identity(self.enc))
+                        self.enc_list.append(tf.identity(self.enc))
 
             # Decoder
             with tf.variable_scope("decoder1"):
@@ -136,7 +136,7 @@ class Graph():
 
                         ## Feed Forward
                         self.dec1 = feedforward(self.dec1, num_units=[4*hp.hidden_units, hp.hidden_units])
-                        dec_list.append(tf.identity(self.dec1))
+                        self.dec_list.append(tf.identity(self.dec1))
             # Decoder
             with tf.variable_scope("decoder2"):
                 ## Embedding
@@ -171,7 +171,7 @@ class Graph():
                 for i in range(hp.num_blocks):
                     with tf.variable_scope("num_blocks_{}".format(i)):
                         ## Multihead Attention ( self-attention)
-                        self.dec2 = multihead_attention(queries=self.dec2,
+                        self.dec2_1 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec2,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -181,8 +181,8 @@ class Graph():
                                                         scope="self_attention")
 
                         ## Multihead Attention ( encoder attention)
-                        self.dec2_1 = multihead_attention(queries=self.dec2,
-                                                        keys=self.enc,
+                        self.dec2_2 = multihead_attention(queries=self.dec2,
+                                                        keys=self.enc_list[i],
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,
@@ -190,15 +190,15 @@ class Graph():
                                                         causality=False,
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
-                        self.dec2_2 = multihead_attention(queries=self.dec2,
-                                                        keys=self.dec1,
+                        self.dec2_3 = multihead_attention(queries=self.dec2,
+                                                        keys=self.dec_list[i],
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2 = tf.add_n([self.dec2_1, self.dec2_2])
+                        self.dec2 = tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3])
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
