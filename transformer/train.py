@@ -171,7 +171,7 @@ class Graph():
                 for i in range(hp.num_blocks):
                     with tf.variable_scope("num_blocks_{}".format(i)):
                         ## Multihead Attention ( self-attention)
-                        self.dec2_1 = multihead_attention(queries=self.dec2,
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec2,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -181,8 +181,8 @@ class Graph():
                                                         scope="self_attention")
 
                         ## Multihead Attention ( encoder attention)
-                        self.dec2_2 = multihead_attention(queries=self.dec2,
-                                                        keys=self.enc_list[i],
+                        self.dec2_1 = multihead_attention(queries=self.dec2,
+                                                        keys=self.enc,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
                                                         dropout_rate=hp.dropout_rate,
@@ -190,7 +190,7 @@ class Graph():
                                                         causality=False,
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
-                        self.dec2_3 = multihead_attention(queries=self.dec2,
+                        self.dec2_2 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec_list[i],
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -198,7 +198,9 @@ class Graph():
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2 = tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3])
+                        self.dec2_1 = tf.scalar_mul(0.9, self.dec2_1)
+                        self.dec2_2 = tf.scalar_mul(0.1, self.dec2_2)
+                        self.dec2 = tf.add(self.dec2_1, self.dec2_2)
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
