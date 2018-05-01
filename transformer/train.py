@@ -180,8 +180,8 @@ class Graph():
                                                         causality=True,
                                                         scope="self_attention")
 
-                        # Multihead Attention ( encoder attention)
-                        self.dec2_1 = multihead_attention(queries=self.dec2,
+                        ## Multihead Attention ( encoder attention)
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.enc,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -190,7 +190,7 @@ class Graph():
                                                         causality=False,
                                                         scope="encoder_attention")
                         ## Multihead Attention ( decoder attention)
-                        self.dec2_2 = multihead_attention(queries=self.dec2,
+                        self.dec2 = multihead_attention(queries=self.dec2,
                                                         keys=self.dec1,
                                                         num_units=hp.hidden_units,
                                                         num_heads=hp.num_heads,
@@ -198,14 +198,13 @@ class Graph():
                                                         is_training=is_training,
                                                         causality=False,
                                                         scope="decoder_attention")
-                        self.dec2 = tf.add_n([self.dec2_1, self.dec2_2])
+                        # self.dec2 = tf.add_n([self.dec2_1, self.dec2_2, self.dec2_3])
                         ## Feed Forward
                         self.dec2 = feedforward(self.dec2, num_units=[4*hp.hidden_units, hp.hidden_units])
 
             # Final linear projection
-            self.logits_dec1 = tf.layers.dense(self.dec1, len(en2idx))
             self.logits = tf.layers.dense(self.dec2, len(en2idx))
-            self.preds = tf.to_int32(tf.arg_max(self.logits_dec1, dimension=-1))
+            self.preds = tf.to_int32(tf.arg_max(self.logits, dimension=-1))
             self.istarget = tf.to_float(tf.not_equal(self.y, 0))
             self.acc = tf.reduce_sum(tf.to_float(tf.equal(self.preds, self.y))*self.istarget)/ (tf.reduce_sum(self.istarget))
             tf.summary.scalar('acc', self.acc)
