@@ -29,4 +29,4 @@ class Hyperparams:
     num_epochs = 20
     num_heads = 8
     dropout_rate = 0.1
-    sinusoid = Falsete # If True, use sinusoid. If false, positional embedding.
+    sinusoid = False # If True, use sinusoid. If false, positional embedding.
